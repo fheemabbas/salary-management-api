@@ -18,3 +18,13 @@ export interface SalaryBreakdown {
     tds: number;
     net: number;
 }
+
+export interface CountryMetrics {
+    min: number;
+    max: number;
+    average: number;
+}
+
+export interface JobTitleMetrics {
+    average: number;
+}

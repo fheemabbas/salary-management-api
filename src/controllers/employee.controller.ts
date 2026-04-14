@@ -1,49 +1,32 @@
 import { Request, Response } from 'express';
-import { CreateEmployeePayload, Employee } from '../types/employee';
-
-const employees: Employee[] = [];
-let nextEmployeeId = 1;
-
-const buildEmployee = (payload: CreateEmployeePayload): Employee => {
-    return {
-        id: nextEmployeeId++,
-        ...payload
-    };
-};
-
-const findEmployeeIndexById = (employeeId: number): number => {
-    return employees.findIndex((employee) => employee.id === employeeId);
-};
-
-const updateEmployee = (
-    currentEmployee: Employee,
-    payload: CreateEmployeePayload
-): Employee => {
-    return {
-        ...currentEmployee,
-        ...payload
-    };
-};
-
-const removeEmployeeByIndex = (employeeIndex: number): Employee => {
-    const [deletedEmployee] = employees.splice(employeeIndex, 1);
-
-    return deletedEmployee;
-};
+import {
+    CreateEmployeePayload,
+    CreateEmployeeResponse,
+    Employee
+} from '../types/employee';
+import {
+    createEmployeeRecord,
+    deleteEmployeeRecord,
+    findEmployeeById,
+    getAllEmployees,
+    resetEmployeeRecords,
+    updateEmployeeRecord
+} from '../services/employee.service';
 
 export const createEmployee = (
-    req: Request<{}, { message: string }, CreateEmployeePayload>,
-    res: Response<{ message: string }>
+    req: Request<{}, CreateEmployeeResponse, CreateEmployeePayload>,
+    res: Response<CreateEmployeeResponse>
 ) => {
-    const employee = buildEmployee(req.body);
+    const employee = createEmployeeRecord(req.body);
 
-    employees.push(employee);
-
-    res.status(201).json({ message: 'Employee created' });
+    res.status(201).json({
+        id: employee.id,
+        message: 'Employee created'
+    });
 };
 
 export const getEmployees = (_req: Request, res: Response) => {
-    res.status(200).json(employees);
+    res.status(200).json(getAllEmployees());
 };
 
 export const getEmployeeById = (
@@ -51,13 +34,13 @@ export const getEmployeeById = (
     res: Response<Employee>
 ) => {
     const employeeId = Number(req.params.id);
-    const employeeIndex = findEmployeeIndexById(employeeId);
+    const employee = findEmployeeById(employeeId);
 
-    if (employeeIndex === -1) {
+    if (!employee) {
         return res.sendStatus(404);
     }
 
-    return res.status(200).json(employees[employeeIndex]);
+    return res.status(200).json(employee);
 };
 
 export const updateEmployeeById = (
@@ -65,16 +48,11 @@ export const updateEmployeeById = (
     res: Response<Employee>
 ) => {
     const employeeId = Number(req.params.id);
-    const employeeIndex = findEmployeeIndexById(employeeId);
+    const updatedEmployee = updateEmployeeRecord(employeeId, req.body);
 
-    if (employeeIndex === -1) {
+    if (!updatedEmployee) {
         return res.sendStatus(404);
     }
-
-    const existingEmployee = employees[employeeIndex];
-    const updatedEmployee = updateEmployee(existingEmployee, req.body);
-
-    employees[employeeIndex] = updatedEmployee;
 
     return res.status(200).json(updatedEmployee);
 };
@@ -84,18 +62,15 @@ export const deleteEmployeeById = (
     res: Response<{ message: string }>
 ) => {
     const employeeId = Number(req.params.id);
-    const existingEmployeeIndex = findEmployeeIndexById(employeeId);
+    const isDeleted = deleteEmployeeRecord(employeeId);
 
-    if (existingEmployeeIndex === -1) {
+    if (!isDeleted) {
         return res.sendStatus(404);
     }
-
-    removeEmployeeByIndex(existingEmployeeIndex);
 
     return res.status(200).json({ message: 'Employee deleted' });
 };
 
 export const resetEmployees = () => {
-    employees.length = 0;
-    nextEmployeeId = 1;
+    resetEmployeeRecords();
 };

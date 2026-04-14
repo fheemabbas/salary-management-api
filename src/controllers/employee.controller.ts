@@ -37,6 +37,27 @@ export const getEmployeeById = (req: Request, res: Response) => {
     return res.status(200).json(employee);
 };
 
+export const updateEmployeeById = (
+    req: Request<{ id: string }, Employee, CreateEmployeePayload>,
+    res: Response<Employee>
+) => {
+    const employeeId = Number(req.params.id);
+    const employeeIndex = employees.findIndex(({ id }) => id === employeeId);
+
+    if (employeeIndex === -1) {
+        return res.sendStatus(404);
+    }
+
+    const updatedEmployee: Employee = {
+        id: employees[employeeIndex].id,
+        ...req.body
+    };
+
+    employees[employeeIndex] = updatedEmployee;
+
+    return res.status(200).json(updatedEmployee);
+};
+
 export const resetEmployees = () => {
     employees.length = 0;
     nextEmployeeId = 1;

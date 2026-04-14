@@ -1,21 +1,21 @@
 import { Request, Response } from 'express';
-
-type Employee = {
-    id: number;
-    fullName: string;
-    jobTitle: string;
-    country: string;
-    salary: number;
-};
+import { CreateEmployeePayload, Employee } from '../types/employee';
 
 const employees: Employee[] = [];
 let nextEmployeeId = 1;
 
-export const createEmployee = (req: Request, res: Response) => {
-    const employee: Employee = {
+const buildEmployee = (payload: CreateEmployeePayload): Employee => {
+    return {
         id: nextEmployeeId++,
-        ...req.body
+        ...payload
     };
+};
+
+export const createEmployee = (
+    req: Request<{}, { message: string }, CreateEmployeePayload>,
+    res: Response<{ message: string }>
+) => {
+    const employee = buildEmployee(req.body);
 
     employees.push(employee);
 

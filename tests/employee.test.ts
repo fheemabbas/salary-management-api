@@ -1,7 +1,12 @@
 import request from 'supertest';
 import app from '../src/app';
+import { resetEmployees } from '../src/controllers/employee.controller';
 
 describe('Employee API', () => {
+    beforeEach(() => {
+        resetEmployees();
+    });
+
     it('should create a new employee', async () => {
         const newEmployee = {
             fullName: 'John Doe',

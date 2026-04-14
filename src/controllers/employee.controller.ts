@@ -11,6 +11,20 @@ const buildEmployee = (payload: CreateEmployeePayload): Employee => {
     };
 };
 
+const findEmployeeIndexById = (employeeId: number): number => {
+    return employees.findIndex((employee) => employee.id === employeeId);
+};
+
+const updateEmployee = (
+    currentEmployee: Employee,
+    payload: CreateEmployeePayload
+): Employee => {
+    return {
+        ...currentEmployee,
+        ...payload
+    };
+};
+
 export const createEmployee = (
     req: Request<{}, { message: string }, CreateEmployeePayload>,
     res: Response<{ message: string }>
@@ -26,15 +40,18 @@ export const getEmployees = (_req: Request, res: Response) => {
     res.status(200).json(employees);
 };
 
-export const getEmployeeById = (req: Request, res: Response) => {
+export const getEmployeeById = (
+    req: Request<{ id: string }>,
+    res: Response<Employee>
+) => {
     const employeeId = Number(req.params.id);
-    const employee = employees.find(({ id }) => id === employeeId);
+    const employeeIndex = findEmployeeIndexById(employeeId);
 
-    if (!employee) {
+    if (employeeIndex === -1) {
         return res.sendStatus(404);
     }
 
-    return res.status(200).json(employee);
+    return res.status(200).json(employees[employeeIndex]);
 };
 
 export const updateEmployeeById = (
@@ -42,16 +59,14 @@ export const updateEmployeeById = (
     res: Response<Employee>
 ) => {
     const employeeId = Number(req.params.id);
-    const employeeIndex = employees.findIndex(({ id }) => id === employeeId);
+    const employeeIndex = findEmployeeIndexById(employeeId);
 
     if (employeeIndex === -1) {
         return res.sendStatus(404);
     }
 
-    const updatedEmployee: Employee = {
-        id: employees[employeeIndex].id,
-        ...req.body
-    };
+    const existingEmployee = employees[employeeIndex];
+    const updatedEmployee = updateEmployee(existingEmployee, req.body);
 
     employees[employeeIndex] = updatedEmployee;
 

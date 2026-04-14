@@ -71,4 +71,12 @@ describe('Metrics API', () => {
 
         expect(response.status).toBe(404);
     });
+
+    it('should return 404 when no employees are found for a job title', async () => {
+        const response = await request(app).get(
+            '/metrics/job-title/UnknownRole'
+        );
+
+        expect(response.status).toBe(404);
+    });
 });

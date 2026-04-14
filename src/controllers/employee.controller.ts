@@ -73,6 +73,22 @@ export const updateEmployeeById = (
     return res.status(200).json(updatedEmployee);
 };
 
+export const deleteEmployeeById = (
+    req: Request<{ id: string }>,
+    res: Response<{ message: string }>
+) => {
+    const employeeId = Number(req.params.id);
+    const employeeIndex = findEmployeeIndexById(employeeId);
+
+    if (employeeIndex === -1) {
+        return res.sendStatus(404);
+    }
+
+    employees.splice(employeeIndex, 1);
+
+    return res.status(200).json({ message: 'Employee deleted' });
+};
+
 export const resetEmployees = () => {
     employees.length = 0;
     nextEmployeeId = 1;

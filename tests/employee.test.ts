@@ -109,4 +109,31 @@ describe('Employee API', () => {
 
         expect(response.status).toBe(404);
     });
+
+    it('should delete an employee by id', async () => {
+        const newEmployee = {
+            fullName: 'Charlie Brown',
+            jobTitle: 'Product Manager',
+            country: 'India',
+            salary: 90000
+        };
+
+        await request(app)
+            .post('/employees')
+            .send(newEmployee);
+
+        const deleteResponse = await request(app).delete('/employees/1');
+
+        expect([200, 204]).toContain(deleteResponse.status);
+
+        const getResponse = await request(app).get('/employees/1');
+
+        expect(getResponse.status).toBe(404);
+    });
+
+    it('should return 404 when deleting a non-existent employee', async () => {
+        const response = await request(app).delete('/employees/9999');
+
+        expect(response.status).toBe(404);
+    });
 });

@@ -25,6 +25,12 @@ const updateEmployee = (
     };
 };
 
+const removeEmployeeByIndex = (employeeIndex: number): Employee => {
+    const [deletedEmployee] = employees.splice(employeeIndex, 1);
+
+    return deletedEmployee;
+};
+
 export const createEmployee = (
     req: Request<{}, { message: string }, CreateEmployeePayload>,
     res: Response<{ message: string }>
@@ -78,13 +84,13 @@ export const deleteEmployeeById = (
     res: Response<{ message: string }>
 ) => {
     const employeeId = Number(req.params.id);
-    const employeeIndex = findEmployeeIndexById(employeeId);
+    const existingEmployeeIndex = findEmployeeIndexById(employeeId);
 
-    if (employeeIndex === -1) {
+    if (existingEmployeeIndex === -1) {
         return res.sendStatus(404);
     }
 
-    employees.splice(employeeIndex, 1);
+    removeEmployeeByIndex(existingEmployeeIndex);
 
     return res.status(200).json({ message: 'Employee deleted' });
 };

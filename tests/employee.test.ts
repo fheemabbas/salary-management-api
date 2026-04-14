@@ -65,4 +65,48 @@ describe('Employee API', () => {
 
         expect(response.status).toBe(404);
     });
+
+    it('should update an employee by id', async () => {
+        const newEmployee = {
+            fullName: 'Bob Wilson',
+            jobTitle: 'DevOps Engineer',
+            country: 'India',
+            salary: 70000
+        };
+
+        await request(app)
+            .post('/employees')
+            .send(newEmployee);
+
+        const updatedEmployee = {
+            fullName: 'Bob Wilson Updated',
+            jobTitle: 'Senior DevOps Engineer',
+            country: 'India',
+            salary: 85000
+        };
+
+        const response = await request(app)
+            .put('/employees/1')
+            .send(updatedEmployee);
+
+        expect(response.status).toBe(200);
+        expect(response.body.fullName).toBe(updatedEmployee.fullName);
+        expect(response.body.jobTitle).toBe(updatedEmployee.jobTitle);
+        expect(response.body.salary).toBe(updatedEmployee.salary);
+    });
+
+    it('should return 404 when updating a non-existent employee', async () => {
+        const updatedEmployee = {
+            fullName: 'Missing Employee',
+            jobTitle: 'Unknown',
+            country: 'India',
+            salary: 10000
+        };
+
+        const response = await request(app)
+            .put('/employees/9999')
+            .send(updatedEmployee);
+
+        expect(response.status).toBe(404);
+    });
 });

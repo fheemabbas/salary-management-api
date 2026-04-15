@@ -11,4 +11,5 @@ module.exports = {
   testMatch: ["**/tests/**/*.test.ts"],
   moduleFileExtensions: ["ts", "js", "json"],
   verbose: true,
+  setupFiles: ["<rootDir>/tests/setup.ts"],
 };

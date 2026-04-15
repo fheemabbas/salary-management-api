@@ -16,6 +16,7 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+database.sqlite
 
 # OS files
 .DS_Store

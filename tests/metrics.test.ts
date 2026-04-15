@@ -1,11 +1,11 @@
 import request from 'supertest';
 import app from '../src/app';
-import { resetEmployees } from '../src/controllers/employee.controller';
+import { resetEmployeeRecords } from '../src/services/employee.service';
 import { CreateEmployeePayload } from '../src/types/employee';
 
 describe('Metrics API', () => {
     beforeEach(() => {
-        resetEmployees();
+        resetEmployeeRecords();
     });
 
     const createEmployee = async (

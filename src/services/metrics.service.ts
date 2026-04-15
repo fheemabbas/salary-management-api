@@ -24,7 +24,11 @@ export const filterByCountry = (
     employees: Employee[],
     country: string
 ): Employee[] => {
-    return employees.filter((employee) => employee.country === country);
+    const normalizedCountry = country.toLowerCase();
+
+    return employees.filter(
+        (employee) => employee.country.toLowerCase() === normalizedCountry
+    );
 };
 
 export const filterByJobTitle = (

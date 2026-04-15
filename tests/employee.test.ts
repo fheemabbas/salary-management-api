@@ -1,11 +1,27 @@
 import request from 'supertest';
 import app from '../src/app';
-import { resetEmployees } from '../src/controllers/employee.controller';
+import { resetEmployeeRecords } from '../src/services/employee.service';
+import { CreateEmployeeResponse } from '../src/types/employee';
 
 describe('Employee API', () => {
     beforeEach(() => {
-        resetEmployees();
+        resetEmployeeRecords();
     });
+
+    const createEmployee = async (
+        employee: {
+            fullName: string;
+            jobTitle: string;
+            country: string;
+            salary: number;
+        }
+    ): Promise<CreateEmployeeResponse> => {
+        const response = await request(app)
+            .post('/employees')
+            .send(employee);
+
+        return response.body;
+    };
 
     it('should create a new employee', async () => {
         const newEmployee = {
@@ -49,11 +65,11 @@ describe('Employee API', () => {
             salary: 55000
         };
 
-        await request(app)
-            .post('/employees')
-            .send(newEmployee);
+        const createdEmployee = await createEmployee(newEmployee);
 
-        const response = await request(app).get('/employees/1');
+        const response = await request(app).get(
+            `/employees/${createdEmployee.id}`
+        );
 
         expect(response.status).toBe(200);
         expect(response.body).toBeDefined();
@@ -74,9 +90,7 @@ describe('Employee API', () => {
             salary: 70000
         };
 
-        await request(app)
-            .post('/employees')
-            .send(newEmployee);
+        const createdEmployee = await createEmployee(newEmployee);
 
         const updatedEmployee = {
             fullName: 'Bob Wilson Updated',
@@ -86,7 +100,7 @@ describe('Employee API', () => {
         };
 
         const response = await request(app)
-            .put('/employees/1')
+            .put(`/employees/${createdEmployee.id}`)
             .send(updatedEmployee);
 
         expect(response.status).toBe(200);
@@ -118,15 +132,17 @@ describe('Employee API', () => {
             salary: 90000
         };
 
-        await request(app)
-            .post('/employees')
-            .send(newEmployee);
+        const createdEmployee = await createEmployee(newEmployee);
 
-        const deleteResponse = await request(app).delete('/employees/1');
+        const deleteResponse = await request(app).delete(
+            `/employees/${createdEmployee.id}`
+        );
 
         expect([200, 204]).toContain(deleteResponse.status);
 
-        const getResponse = await request(app).get('/employees/1');
+        const getResponse = await request(app).get(
+            `/employees/${createdEmployee.id}`
+        );
 
         expect(getResponse.status).toBe(404);
     });

@@ -1,18 +1,21 @@
 import request from 'supertest';
 import app from '../src/app';
-import { resetEmployees } from '../src/controllers/employee.controller';
+import { resetEmployeeRecords } from '../src/services/employee.service';
+import { CreateEmployeePayload, CreateEmployeeResponse } from '../src/types/employee';
 
 describe('Salary API', () => {
     beforeEach(() => {
-        resetEmployees();
+        resetEmployeeRecords();
     });
 
-    const createEmployee = async (employee: any) => {
+    const createEmployee = async (
+        employee: CreateEmployeePayload
+    ): Promise<CreateEmployeeResponse> => {
         const response = await request(app)
             .post('/employees')
             .send(employee);
 
-        return response.body; // assuming API returns created employee (with id)
+        return response.body;
     };
 
     it('should return salary details for an employee in India', async () => {
@@ -20,7 +23,7 @@ describe('Salary API', () => {
             fullName: 'Deepak Kumar',
             jobTitle: 'Software Engineer',
             country: 'India',
-            salary: 50000,
+            salary: 50000
         });
 
         const response = await request(app).get(`/salary/${employee.id}`);
@@ -38,7 +41,7 @@ describe('Salary API', () => {
             fullName: 'Michael Johnson',
             jobTitle: 'Data Analyst',
             country: 'United States',
-            salary: 50000,
+            salary: 50000
         });
 
         const response = await request(app).get(`/salary/${employee.id}`);
@@ -56,7 +59,7 @@ describe('Salary API', () => {
             fullName: 'Liam Carter',
             jobTitle: 'Designer',
             country: 'Canada',
-            salary: 50000,
+            salary: 50000
         });
 
         const response = await request(app).get(`/salary/${employee.id}`);

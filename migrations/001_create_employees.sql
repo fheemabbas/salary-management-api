@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS employees (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  fullName TEXT NOT NULL,
+  jobTitle TEXT NOT NULL,
+  country TEXT NOT NULL,
+  salary REAL NOT NULL
+);

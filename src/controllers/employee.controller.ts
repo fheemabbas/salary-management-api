@@ -59,7 +59,7 @@ export const updateEmployeeById = (
 
 export const deleteEmployeeById = (
     req: Request<{ id: string }>,
-    res: Response<{ message: string }>
+    res: Response
 ) => {
     const employeeId = Number(req.params.id);
     const isDeleted = deleteEmployeeRecord(employeeId);
@@ -68,7 +68,7 @@ export const deleteEmployeeById = (
         return res.sendStatus(404);
     }
 
-    return res.status(200).json({ message: 'Employee deleted' });
+    return res.sendStatus(204);
 };
 
 export const resetEmployees = () => {

@@ -1,65 +1,77 @@
+import db from '../config/db';
 import { CreateEmployeePayload, Employee } from '../types/employee';
 
-const employees: Employee[] = [];
-let nextEmployeeId = 1;
+const insertEmployeeStatement = db.prepare(`
+    INSERT INTO employees (fullName, jobTitle, country, salary)
+    VALUES (@fullName, @jobTitle, @country, @salary)
+`);
 
-const findEmployeeIndexById = (employeeId: number): number => {
-    return employees.findIndex((employee) => employee.id === employeeId);
-};
+const selectAllEmployeesStatement = db.prepare(`
+    SELECT id, fullName, jobTitle, country, salary
+    FROM employees
+`);
 
-const updateEmployee = (
-    currentEmployee: Employee,
-    payload: CreateEmployeePayload
-): Employee => {
-    return {
-        ...currentEmployee,
-        ...payload
-    };
-};
+const selectEmployeeByIdStatement = db.prepare(`
+    SELECT id, fullName, jobTitle, country, salary
+    FROM employees
+    WHERE id = ?
+`);
+
+const updateEmployeeStatement = db.prepare(`
+    UPDATE employees
+    SET fullName = @fullName,
+        jobTitle = @jobTitle,
+        country = @country,
+        salary = @salary
+    WHERE id = @id
+`);
+
+const deleteEmployeeStatement = db.prepare(`
+    DELETE FROM employees
+    WHERE id = ?
+`);
+
+const deleteAllEmployeesStatement = db.prepare(`
+    DELETE FROM employees
+`);
 
 export const createEmployeeRecord = (
     payload: CreateEmployeePayload
 ): Employee => {
-    const employee: Employee = {
-        id: nextEmployeeId++,
+    const result = insertEmployeeStatement.run(payload);
+
+    return {
+        id: Number(result.lastInsertRowid),
         ...payload
     };
-
-    employees.push(employee);
-
-    return employee;
 };
 
 export const getAllEmployees = (): Employee[] => {
-    return employees;
+    return selectAllEmployeesStatement.all() as Employee[];
 };
 
 export const findEmployeeById = (
     employeeId: number
 ): Employee | undefined => {
-    const employeeIndex = findEmployeeIndexById(employeeId);
-
-    if (employeeIndex === -1) {
-        return undefined;
-    }
-
-    return employees[employeeIndex];
+    return selectEmployeeByIdStatement.get(employeeId) as Employee | undefined;
 };
 
 export const updateEmployeeRecord = (
     employeeId: number,
     payload: CreateEmployeePayload
 ): Employee | undefined => {
-    const employeeIndex = findEmployeeIndexById(employeeId);
+    const existingEmployee = findEmployeeById(employeeId);
 
-    if (employeeIndex === -1) {
+    if (!existingEmployee) {
         return undefined;
     }
 
-    const existingEmployee = employees[employeeIndex];
-    const updatedEmployee = updateEmployee(existingEmployee, payload);
+    const updatedEmployee: Employee = {
+        id: existingEmployee.id,
+        ...payload
+    };
 
-    employees[employeeIndex] = updatedEmployee;
+    updateEmployeeStatement.run(updatedEmployee);
 
     return updatedEmployee;
 };
@@ -67,18 +79,11 @@ export const updateEmployeeRecord = (
 export const deleteEmployeeRecord = (
     employeeId: number
 ): boolean => {
-    const employeeIndex = findEmployeeIndexById(employeeId);
+    const result = deleteEmployeeStatement.run(employeeId);
 
-    if (employeeIndex === -1) {
-        return false;
-    }
-
-    employees.splice(employeeIndex, 1);
-
-    return true;
+    return result.changes > 0;
 };
 
 export const resetEmployeeRecords = (): void => {
-    employees.length = 0;
-    nextEmployeeId = 1;
+    deleteAllEmployeesStatement.run();
 };

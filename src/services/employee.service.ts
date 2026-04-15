@@ -86,4 +86,6 @@ export const deleteEmployeeRecord = (
 
 export const resetEmployeeRecords = (): void => {
     deleteAllEmployeesStatement.run();
+    // Reset AUTOINCREMENT counter so IDs restart from 1
+    db.prepare(`DELETE FROM sqlite_sequence WHERE name = 'employees'`).run();
 };

@@ -24,10 +24,6 @@ export const getSalary = (
         }
     }
 
-    const employeeForCalculation = {
-        ...employee,
-        salary: gross
-    };
-
-    return res.status(200).json(calculateSalary(employeeForCalculation));
+    const result = calculateSalary(gross, employee.country);
+    return res.status(200).json(result);
 };

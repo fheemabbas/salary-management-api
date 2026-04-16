@@ -51,9 +51,15 @@ export const getEmployeeById = (
 };
 
 export const updateEmployeeById = (
-    req: Request<{ id: string }, Employee, CreateEmployeePayload>,
+    req: Request<{ id: string }, Employee, Partial<CreateEmployeePayload>>,
     res: Response<Employee>
 ) => {
+    const validationError = validateEmployeePayload(req.body, true);
+
+    if (validationError) {
+        return res.status(400).json({ message: validationError } as any);
+    }
+
     const employeeId = Number(req.params.id);
     const updatedEmployee = updateEmployeeRecord(employeeId, req.body);
 

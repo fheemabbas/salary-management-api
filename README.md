@@ -162,14 +162,14 @@ Interactive API docs are available at:
 | `POST` | `/employees` | Create a new employee |
 | `GET` | `/employees` | List all employees |
 | `GET` | `/employees/:id` | Get employee by ID |
-| `PUT` | `/employees/:id` | Update employee by ID |
+| `PUT` | `/employees/:id` | Update employee by ID (Supports partial field updates) |
 | `DELETE` | `/employees/:id` | Delete employee by ID |
 
 ### Salary
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/salary/:employeeId` | Get salary breakdown (gross, TDS, net) |
+| `GET` | `/salary/:employeeId` | Get salary breakdown (Optionally override DB with `?gross_salary=X`) |
 
 ### Metrics
 
@@ -193,6 +193,16 @@ curl -X POST http://localhost:3025/employees \
 
 # Get salary breakdown
 curl http://localhost:3025/salary/1
+
+# Get overridden salary breakdown (query parameter)
+curl "http://localhost:3025/salary/1?gross_salary=100000"
+
+# Partial update employee salary
+curl -X PUT http://localhost:3025/employees/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "salary": 80000
+  }'
 ```
 
 ### Sample Response — `/salary/:id`
@@ -213,3 +223,30 @@ curl http://localhost:3025/salary/1
 - **Tests** use a dedicated `test.sqlite` — your development DB is never touched during tests
 - **Adding new endpoints** — just add a route + JSDoc comment above it; Swagger picks it up automatically on restart
 - **Migration naming** — prefix files with numbers (e.g. `001_create_employees.sql`) to enforce execution order
+
+---
+
+## Implementation Details (AI Usage)
+
+### Tools Used
+- Google Gemini (via Antigravity IDE) as primary tool
+
+### How AI Was Used
+- Project scaffolding (Express + TypeScript)
+- Generating initial test cases (TDD support)
+- Refactoring suggestions
+- Swagger documentation improvements
+- Implementation of advanced API logic (Partial employee updates, query-based overrides)
+- Identifying edge cases and validation scenarios
+
+### Example Prompts
+- "Generate Jest test cases for employee CRUD APIs following TDD"
+- "Add input validation for Express API"
+- "Refactor service layer for clean architecture"
+- "Update Swagger documentation to support query params"
+
+### Human Decisions & Validation
+- All architecture and design decisions were made manually
+- TDD workflow was followed independently
+- AI outputs were reviewed, modified, and validated
+- Edge cases and behavior verified via tests

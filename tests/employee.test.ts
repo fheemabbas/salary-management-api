@@ -38,6 +38,110 @@ describe('Employee API', () => {
         expect(response.status).toBe(201);
     });
 
+    it('should return 400 when fullName is missing', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                jobTitle: 'Developer',
+                country: 'India',
+                salary: 50000
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when jobTitle is missing', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                country: 'India',
+                salary: 50000
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when country is missing', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                jobTitle: 'Developer',
+                salary: 50000
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when salary is missing', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                jobTitle: 'Developer',
+                country: 'India'
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when salary is negative', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                jobTitle: 'Developer',
+                country: 'India',
+                salary: -100
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when salary is 0', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                jobTitle: 'Developer',
+                country: 'India',
+                salary: 0
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when fullName is empty', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: '',
+                jobTitle: 'Developer',
+                country: 'India',
+                salary: 50000
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when jobTitle is empty', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                jobTitle: '',
+                country: 'India',
+                salary: 50000
+            });
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when country is empty', async () => {
+        const response = await request(app)
+            .post('/employees')
+            .send({
+                fullName: 'Test User',
+                jobTitle: 'Developer',
+                country: '',
+                salary: 50000
+            });
+        expect(response.status).toBe(400);
+    });
+
     it('should return a list of employees', async () => {
         const newEmployee = {
             fullName: 'Jane Doe',
@@ -122,6 +226,78 @@ describe('Employee API', () => {
             .send(updatedEmployee);
 
         expect(response.status).toBe(404);
+    });
+
+    it('should update only salary of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ salary: 80000 });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.salary).toBe(80000);
+        expect(updateRes.body.fullName).toBe('Test User');
+    });
+
+    it('should update only fullName of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ fullName: 'Updated Name' });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.fullName).toBe('Updated Name');
+        expect(updateRes.body.jobTitle).toBe('Developer');
+    });
+
+    it('should update only jobTitle of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ jobTitle: 'Senior Developer' });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.jobTitle).toBe('Senior Developer');
+        expect(updateRes.body.country).toBe('India');
+    });
+
+    it('should update only country of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ country: 'USA' });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.country).toBe('USA');
+        expect(updateRes.body.salary).toBe(50000);
     });
 
     it('should delete an employee by id', async () => {

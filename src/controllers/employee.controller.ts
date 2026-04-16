@@ -12,11 +12,18 @@ import {
     resetEmployeeRecords,
     updateEmployeeRecord
 } from '../services/employee.service';
+import { validateEmployeePayload } from '../utils/validation';
 
 export const createEmployee = (
     req: Request<{}, CreateEmployeeResponse, CreateEmployeePayload>,
     res: Response<CreateEmployeeResponse>
 ) => {
+    const validationError = validateEmployeePayload(req.body);
+
+    if (validationError) {
+        return res.status(400).json({ message: validationError } as any);
+    }
+
     const employee = createEmployeeRecord(req.body);
 
     res.status(201).json({
@@ -44,9 +51,15 @@ export const getEmployeeById = (
 };
 
 export const updateEmployeeById = (
-    req: Request<{ id: string }, Employee, CreateEmployeePayload>,
+    req: Request<{ id: string }, Employee, Partial<CreateEmployeePayload>>,
     res: Response<Employee>
 ) => {
+    const validationError = validateEmployeePayload(req.body, true);
+
+    if (validationError) {
+        return res.status(400).json({ message: validationError } as any);
+    }
+
     const employeeId = Number(req.params.id);
     const updatedEmployee = updateEmployeeRecord(employeeId, req.body);
 

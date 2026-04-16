@@ -58,7 +58,7 @@ export const findEmployeeById = (
 
 export const updateEmployeeRecord = (
     employeeId: number,
-    payload: CreateEmployeePayload
+    payload: Partial<CreateEmployeePayload>
 ): Employee | undefined => {
     const existingEmployee = findEmployeeById(employeeId);
 
@@ -67,8 +67,9 @@ export const updateEmployeeRecord = (
     }
 
     const updatedEmployee: Employee = {
-        id: existingEmployee.id,
-        ...payload
+        ...existingEmployee,
+        ...payload,
+        id: existingEmployee.id
     };
 
     updateEmployeeStatement.run(updatedEmployee);

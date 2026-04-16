@@ -72,6 +72,71 @@ describe('Salary API', () => {
         });
     });
 
+    it('should calculate salary using provided gross_salary', async () => {
+        const employee = await createEmployee({
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        });
+
+        const response = await request(app)
+            .get(`/salary/${employee.id}?gross_salary=60000`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            gross: 60000,
+            tds: 6000,
+            net: 54000
+        });
+    });
+
+    it('should fallback to employee.salary if gross_salary not provided', async () => {
+        const employee = await createEmployee({
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        });
+
+        const response = await request(app).get(`/salary/${employee.id}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            gross: 50000,
+            tds: 5000,
+            net: 45000
+        });
+    });
+
+    it('should return 400 if gross_salary is invalid (negative)', async () => {
+        const employee = await createEmployee({
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        });
+
+        const response = await request(app)
+            .get(`/salary/${employee.id}?gross_salary=-100`);
+
+        expect(response.status).toBe(400);
+    });
+
+    it('should return 400 if gross_salary is invalid (zero)', async () => {
+        const employee = await createEmployee({
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        });
+
+        const response = await request(app)
+            .get(`/salary/${employee.id}?gross_salary=0`);
+
+        expect(response.status).toBe(400);
+    });
+
     it('should return 404 when salary is requested for a non-existent employee', async () => {
         const response = await request(app).get('/salary/9999');
 

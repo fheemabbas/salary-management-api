@@ -21,6 +21,7 @@ const employeeRouter = Router();
  * /employees:
  *   post:
  *     summary: Create a new employee
+ *     description: Validates and securely creates a new employee profile in the system.
  *     tags: [Employees]
  *     requestBody:
  *       required: true
@@ -42,6 +43,8 @@ const employeeRouter = Router();
  *                 id:
  *                   type: integer
  *                   example: 1
+ *       400:
+ *         description: Invalid input, object invalid
  */
 employeeRouter.post('/employees', createEmployee);
 
@@ -93,6 +96,7 @@ employeeRouter.get('/employees/:id', getEmployeeById);
  * /employees/{id}:
  *   put:
  *     summary: Update an employee by ID
+ *     description: Updates only provided fields of an employee
  *     tags: [Employees]
  *     parameters:
  *       - in: path
@@ -106,7 +110,9 @@ employeeRouter.get('/employees/:id', getEmployeeById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateEmployeePayload'
+ *             $ref: '#/components/schemas/UpdateEmployeePayload'
+ *           example:
+ *             salary: 80000
  *     responses:
  *       200:
  *         description: Employee updated successfully
@@ -114,6 +120,8 @@ employeeRouter.get('/employees/:id', getEmployeeById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Employee'
+ *       400:
+ *         description: Invalid partial field payload
  *       404:
  *         description: Employee not found
  */

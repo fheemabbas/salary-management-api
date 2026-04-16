@@ -15,6 +15,7 @@ const salaryRouter = Router();
  * /salary/{employeeId}:
  *   get:
  *     summary: Get salary breakdown for an employee
+ *     description: Computes the gross, TDS, and net salary. A gross_salary parameter can optionally override the DB value.
  *     tags: [Salary]
  *     parameters:
  *       - in: path
@@ -24,6 +25,13 @@ const salaryRouter = Router();
  *           type: integer
  *           example: 1
  *         description: The unique ID of the employee
+ *       - in: query
+ *         name: gross_salary
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 60000
+ *         description: Optional gross salary override
  *     responses:
  *       200:
  *         description: Salary breakdown retrieved
@@ -32,9 +40,11 @@ const salaryRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/SalaryBreakdown'
  *             example:
- *               gross: 50000
- *               tds: 5000
- *               net: 45000
+ *               gross: 60000
+ *               tds: 6000
+ *               net: 54000
+ *       400:
+ *         description: Invalid gross salary
  *       404:
  *         description: Employee not found
  */

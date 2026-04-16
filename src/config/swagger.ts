@@ -36,6 +36,16 @@ const options: swaggerJsDoc.Options = {
                         salary: { type: 'number', example: 75000 },
                     },
                 },
+                UpdateEmployeePayload: {
+                    type: 'object',
+                    description: 'Updates only provided fields of an employee',
+                    properties: {
+                        fullName: { type: 'string', example: 'John Doe' },
+                        jobTitle: { type: 'string', example: 'Senior Software Engineer' },
+                        country: { type: 'string', example: 'India' },
+                        salary: { type: 'number', example: 80000 },
+                    },
+                },
                 SalaryBreakdown: {
                     type: 'object',
                     properties: {

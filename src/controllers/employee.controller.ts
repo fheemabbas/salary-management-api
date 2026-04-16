@@ -17,6 +17,21 @@ export const createEmployee = (
     req: Request<{}, CreateEmployeeResponse, CreateEmployeePayload>,
     res: Response<CreateEmployeeResponse>
 ) => {
+    const { fullName, jobTitle, country, salary } = req.body;
+
+    if (!fullName || typeof fullName !== 'string' || fullName.trim() === '') {
+        return res.status(400).json({ message: 'fullName is required and must be a non-empty string' } as any);
+    }
+    if (!jobTitle || typeof jobTitle !== 'string' || jobTitle.trim() === '') {
+        return res.status(400).json({ message: 'jobTitle is required and must be a non-empty string' } as any);
+    }
+    if (!country || typeof country !== 'string' || country.trim() === '') {
+        return res.status(400).json({ message: 'country is required and must be a non-empty string' } as any);
+    }
+    if (salary === undefined || typeof salary !== 'number' || salary <= 0) {
+        return res.status(400).json({ message: 'salary is required and must be a number greater than 0' } as any);
+    }
+
     const employee = createEmployeeRecord(req.body);
 
     res.status(201).json({

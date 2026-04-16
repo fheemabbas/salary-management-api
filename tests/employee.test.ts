@@ -228,6 +228,78 @@ describe('Employee API', () => {
         expect(response.status).toBe(404);
     });
 
+    it('should update only salary of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ salary: 80000 });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.salary).toBe(80000);
+        expect(updateRes.body.fullName).toBe('Test User');
+    });
+
+    it('should update only fullName of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ fullName: 'Updated Name' });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.fullName).toBe('Updated Name');
+        expect(updateRes.body.jobTitle).toBe('Developer');
+    });
+
+    it('should update only jobTitle of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ jobTitle: 'Senior Developer' });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.jobTitle).toBe('Senior Developer');
+        expect(updateRes.body.country).toBe('India');
+    });
+
+    it('should update only country of an employee', async () => {
+        const newEmployee = {
+            fullName: 'Test User',
+            jobTitle: 'Developer',
+            country: 'India',
+            salary: 50000
+        };
+        const createdEmployee = await createEmployee(newEmployee);
+
+        const updateRes = await request(app)
+            .put(`/employees/${createdEmployee.id}`)
+            .send({ country: 'USA' });
+
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.country).toBe('USA');
+        expect(updateRes.body.salary).toBe(50000);
+    });
+
     it('should delete an employee by id', async () => {
         const newEmployee = {
             fullName: 'Charlie Brown',
